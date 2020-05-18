@@ -141,6 +141,12 @@ CleanUp:
     return (PVOID) (ULONG_PTR) retStatus;
 }
 
+typedef struct {
+    char arg[256];
+    BOOL val_required;
+} Options;
+
+
 INT32 main(INT32 argc, CHAR *argv[])
 {
     PDeviceInfo pDeviceInfo = NULL;
@@ -158,28 +164,73 @@ INT32 main(INT32 argc, CHAR *argv[])
     CHAR filePath[MAX_PATH_LEN + 1];
     PTrackInfo pAudioTrack = NULL;
     BYTE audioCpd[KVS_AAC_CPD_SIZE_BYTE];
-
+    PCHAR jsonFilePath = NULL;
     MEMSET(&data, 0x00, SIZEOF(SampleCustomData));
 
-    if (argc < 2) {
-        printf("Usage: AWS_ACCESS_KEY_ID=SAMPLEKEY AWS_SECRET_ACCESS_KEY=SAMPLESECRET %s <stream_name> <duration_in_seconds> <frame_files_path>\n", argv[0]);
-        CHK(FALSE, STATUS_INVALID_ARG);
-    }
-
-    if ((accessKey = getenv(ACCESS_KEY_ENV_VAR)) == NULL || (secretKey = getenv(SECRET_KEY_ENV_VAR)) == NULL) {
-        printf("Error missing credentials\n");
-        CHK(FALSE, STATUS_INVALID_ARG);
-    }
-
+    int localArgIter = argc;
+    int start_index = argc - localArgIter + 1;
+    static Options long_options[] = {
+        {"--stream_name", TRUE},
+        {"--parse",  TRUE},
+        {"--duration", TRUE},
+        {"--path", TRUE},
+    };
     MEMSET(data.sampleDir, 0x00, MAX_PATH_LEN + 1);
-    if (argc < 4) {
-        STRCPY(data.sampleDir, (PCHAR) "../samples");
-    } else {
-        STRNCPY(data.sampleDir, argv[3], MAX_PATH_LEN);
-        if (data.sampleDir[STRLEN(data.sampleDir) - 1] == '/') {
-            data.sampleDir[STRLEN(data.sampleDir) - 1] = '\0';
+    STRCPY(data.sampleDir, (PCHAR) "../samples");
+    while(localArgIter > 1) {
+        if(STRNCMP(argv[start_index], long_options[0].arg, STRLEN(long_options[0].arg)) == 0) {
+            if(long_options[0].val_required == TRUE) {
+                streamName = argv[start_index + 1];
+            }
+            printf("Found 0...%s...%s\n", long_options[0].arg, argv[start_index]);
         }
+        else if(STRNCMP(argv[start_index], long_options[1].arg, STRLEN(long_options[1].arg)) == 0) {
+            if(long_options[1].val_required == TRUE) {
+                jsonFilePath = argv[start_index + 1];
+            }
+            printf("Found 1...%s...%s\n", long_options[1].arg, argv[start_index]);
+        }
+        else if(STRNCMP(argv[start_index], long_options[2].arg, STRLEN(long_options[2].arg)) == 0) {
+            if(long_options[2].val_required == TRUE) {
+                // Get the duration and convert to an integer
+                CHK_STATUS(STRTOUI64(argv[start_index + 1], NULL, 10, &streamingDuration));
+                printf("streaming for %" PRIu64 " seconds\n", streamingDuration);
+                streamingDuration *= HUNDREDS_OF_NANOS_IN_A_SECOND;
+            }
+            printf("Found 2\n");
+        }
+        else if(STRNCMP(argv[start_index], long_options[3].arg, STRLEN(long_options[3].arg)) == 0) {
+            if(long_options[3].val_required == TRUE) {
+                STRNCPY(data.sampleDir, argv[start_index + 1], MAX_PATH_LEN);
+                if (data.sampleDir[STRLEN(data.sampleDir) - 1] == '/') {
+                        data.sampleDir[STRLEN(data.sampleDir) - 1] = '\0';
+                }
+            }
+            printf("Found 3\n");
+        }
+        localArgIter--;
+        start_index++;
     }
+    printf("%s, %llu, %s, %s\n", streamName, streamingDuration, jsonFilePath, data.sampleDir);
+//    if (argc < 2) {
+//        printf("Usage: AWS_ACCESS_KEY_ID=SAMPLEKEY AWS_SECRET_ACCESS_KEY=SAMPLESECRET %s <stream_name> <duration_in_seconds> <frame_files_path>\n", argv[0]);
+//        CHK(FALSE, STATUS_INVALID_ARG);
+//    }
+//
+//    if ((accessKey = getenv(ACCESS_KEY_ENV_VAR)) == NULL || (secretKey = getenv(SECRET_KEY_ENV_VAR)) == NULL) {
+//        printf("Error missing credentials\n");
+//        CHK(FALSE, STATUS_INVALID_ARG);
+//    }
+
+//    MEMSET(data.sampleDir, 0x00, MAX_PATH_LEN + 1);
+//    if (argc < 4) {
+//        STRCPY(data.sampleDir, (PCHAR) "../samples");
+//    } else {
+//        STRNCPY(data.sampleDir, argv[3], MAX_PATH_LEN);
+//        if (data.sampleDir[STRLEN(data.sampleDir) - 1] == '/') {
+//            data.sampleDir[STRLEN(data.sampleDir) - 1] = '\0';
+//        }
+//    }
 
     printf("Loading audio frames...\n");
     for(i = 0; i < NUMBER_OF_AAC_FRAME_FILES; ++i) {
@@ -203,22 +254,23 @@ INT32 main(INT32 argc, CHAR *argv[])
 
     cacertPath = getenv(CACERT_PATH_ENV_VAR);
     sessionToken = getenv(SESSION_TOKEN_ENV_VAR);
-    streamName = argv[1];
+//    streamName = argv[1];
     if ((region = getenv(DEFAULT_REGION_ENV_VAR)) == NULL) {
         region = (PCHAR) DEFAULT_AWS_REGION;
     }
 
-    if (argc >= 3) {
-        // Get the duration and convert to an integer
-        CHK_STATUS(STRTOUI64(argv[2], NULL, 10, &streamingDuration));
-        printf("streaming for %" PRIu64 " seconds\n", streamingDuration);
-        streamingDuration *= HUNDREDS_OF_NANOS_IN_A_SECOND;
-    }
+//    if (argc >= 3) {
+//        // Get the duration and convert to an integer
+//        CHK_STATUS(STRTOUI64(argv[2], NULL, 10, &streamingDuration));
+//        printf("streaming for %" PRIu64 " seconds\n", streamingDuration);
+//        streamingDuration *= HUNDREDS_OF_NANOS_IN_A_SECOND;
+//    }
 
     streamStopTime = defaultGetTime() + streamingDuration;
 
     // default storage size is 128MB. Use setDeviceInfoStorageSize after create to change storage size.
     CHK_STATUS(createDefaultDeviceInfo(&pDeviceInfo));
+
     // adjust members of pDeviceInfo here if needed
     pDeviceInfo->clientInfo.loggerLogLevel = LOG_LEVEL_DEBUG;
 
@@ -247,12 +299,13 @@ INT32 main(INT32 argc, CHAR *argv[])
                                                                 NULL,
                                                                 NULL,
                                                                 &pClientCallbacks));
+    printf("Here\n");
     CHK_STATUS(createStreamCallbacks(&pStreamCallbacks));
     CHK_STATUS(addStreamCallbacks(pClientCallbacks, pStreamCallbacks));
 
     CHK_STATUS(createKinesisVideoClient(pDeviceInfo, pClientCallbacks, &clientHandle));
     CHK_STATUS(createKinesisVideoStreamSync(clientHandle, pStreamInfo, &streamHandle));
-
+    printf("Here\n");
     data.streamStopTime = streamStopTime;
     data.streamHandle = streamHandle;
     data.streamStartTime = defaultGetTime();

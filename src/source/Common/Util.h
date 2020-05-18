@@ -10,6 +10,11 @@ Util internal include file
 extern "C" {
 #endif
 
+//typedef struct {
+//    char arg[256];
+//    BOOL val_required;
+//} Options;
+
 #define EARLY_EXPIRATION_FACTOR                                     1.0
 #define IOT_EXPIRATION_PARSE_CONVERSION_BASE                        10
 

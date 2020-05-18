@@ -788,8 +788,6 @@ PUBLIC_API SERVICE_CALL_RESULT getServiceCallResultFromHttpStatus(UINT32);
  */
 PUBLIC_API STATUS releaseCallInfo(PCallInfo);
 
-
-
 #ifdef  __cplusplus
 }
 #endif
