@@ -62,7 +62,22 @@ extern "C" {
      (error) == STATUS_FILE_CREDENTIAL_PROVIDER_OPEN_FILE_FAILED || (error) == STATUS_FILE_CREDENTIAL_PROVIDER_INVALID_FILE_LENGTH ||                \
      (error) == STATUS_FILE_CREDENTIAL_PROVIDER_INVALID_FILE_FORMAT)
 
-////////////////////////////////////////////////////
+
+
+///////////////////////////////////////////////////////////
+/// New Iot Credentials configuration used in samples
+/// Uncomment IOT_CORE_CREDENTIAL_ENABLE to enable 
+//////////////////////////////////////////////////////////
+
+#define IOT_CORE_CREDENTIAL_ENDPOINT    ((PCHAR) "AWS_IOT_CORE_CREDENTIAL_ENDPOINT")
+#define IOT_CORE_CERT                   ((PCHAR) "AWS_IOT_CORE_CERT")
+#define IOT_CORE_PRIVATE_KEY            ((PCHAR) "AWS_IOT_CORE_PRIVATE_KEY")
+#define IOT_CORE_ROLE_ALIAS             ((PCHAR) "AWS_IOT_CORE_ROLE_ALIAS")
+#define IOT_CORE_THING_NAME             ((PCHAR) "AWS_IOT_CORE_THING_NAME")
+
+//#define IOT_CORE_ENABLE_CREDENTIALS 1
+
+
 /// New common base status code.
 /// All common library status codes defined
 /// should continue from the STATUS_COMMON_BASE
