@@ -55,8 +55,6 @@ endif()
 
 message(STATUS "Kinesis Video Producer path is ${KINESIS_VIDEO_PRODUCER_C_SRC}")
 
-message(FATAL_ERROR "======= STOP for now =======")
-
 if(BUILD_DEPENDENCIES)
   if (NOT OPEN_SRC_INSTALL_PREFIX)
     set(OPEN_SRC_INSTALL_PREFIX ${CMAKE_CURRENT_SOURCE_DIR}/open-source)
@@ -82,7 +80,7 @@ if(BUILD_DEPENDENCIES)
   if(USE_OPENSSL)
     set(BUILD_ARGS -DBUILD_STATIC=${BUILD_STATIC}
                    -DBUILD_OPENSSL_PLATFORM=${BUILD_OPENSSL_PLATFORM})
-    build_dependency(openssl ${BUILD_ARGS})
+    build_dependency(openssl ${BUILD_ARGS} ${CMAKE_ARGS})
   elseif(USE_MBEDTLS)
     set(BUILD_ARGS -DBUILD_STATIC=${BUILD_STATIC})
     build_dependency(mbedtls ${BUILD_ARGS})
@@ -99,10 +97,11 @@ if(BUILD_DEPENDENCIES)
   endif()
 
   if (BUILD_COMMON_CURL)
+
     set(BUILD_ARGS  -DBUILD_STATIC=${BUILD_STATIC}
                     -DUSE_OPENSSL=${USE_OPENSSL}
                     -DUSE_MBEDTLS=${USE_MBEDTLS})
-    build_dependency(curl ${BUILD_ARGS})
+    build_dependency(curl ${BUILD_ARGS} ${CMAKE_ARGS})
   endif()
 
   if(BUILD_TEST)
