@@ -5,6 +5,20 @@ project(KinesisVideoProducerC LANGUAGES C)
 
 include(GNUInstallDirs)
 
+# Test
+set(CMAKE_ARGS
+        -DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}
+        -DANDROID_TOOLCHAIN=clang
+        -DANDROID_ABI=${ANDROID_ABI}
+        -DANDROID_NDK=${ANDROID_NDK}
+        -DANDROID_PLATFORM=${ANDROID_PLATFORM}
+        -DCMAKE_ANDROID_ARCH_ABI=${CMAKE_ANDROID_ARCH_ABI}
+        -DCMAKE_ANDROID_NDK=${CMAKE_ANDROID_NDK}
+        -DCMAKE_SYSTEM_NAME=Android
+        -DCMAKE_SYSTEM_VERSION=${CMAKE_SYSTEM_VERSION}
+        -DCMAKE_BUILD_TYPE=Release)
+
+message("CMAKE_ARGS = ${CMAKE_ARGS}")
 
 # User Flags
 option(ADD_MUCLIBC "Add -muclibc c flag" OFF)
