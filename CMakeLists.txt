@@ -6,6 +6,7 @@ project(KinesisVideoProducerC LANGUAGES C)
 include(GNUInstallDirs)
 
 # Test
+message ("producer: CMAKE_FIND_ROOT_PATH=${CMAKE_FIND_ROOT_PATH}")
 set(CMAKE_ARGS
         -DCMAKE_FIND_ROOT_PATH=${CMAKE_FIND_ROOT_PATH}
         -DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}
