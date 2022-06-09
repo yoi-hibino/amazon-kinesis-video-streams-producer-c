@@ -18,7 +18,7 @@ set(CMAKE_ARGS
         -DCMAKE_SYSTEM_VERSION=${CMAKE_SYSTEM_VERSION}
         -DCMAKE_BUILD_TYPE=Release)
 
-message("CMAKE_ARGS = ${CMAKE_ARGS}")
+message("Producer-C CMAKE_ARGS = ${CMAKE_ARGS}")
 
 # User Flags
 option(ADD_MUCLIBC "Add -muclibc c flag" OFF)
