@@ -2,16 +2,28 @@ cmake_minimum_required(VERSION 3.6.3)
 
 project(libkvspic-download NONE)
 
+set(CMAKE_ARGS         
+        -DCMAKE_FIND_ROOT_PATH=${CMAKE_FIND_ROOT_PATH}
+        -DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}
+        -DANDROID_TOOLCHAIN=clang
+        -DANDROID_ABI=${ANDROID_ABI}
+        -DANDROID_NDK=${ANDROID_NDK}
+        -DANDROID_PLATFORM=${ANDROID_PLATFORM}
+        -DCMAKE_ANDROID_ARCH_ABI=${CMAKE_ANDROID_ARCH_ABI}
+        -DCMAKE_ANDROID_NDK=${CMAKE_ANDROID_NDK}
+        -DCMAKE_SYSTEM_NAME=Android
+        -DCMAKE_SYSTEM_VERSION=${CMAKE_SYSTEM_VERSION}
+        -DCMAKE_BUILD_TYPE=Release)
+
 include(ExternalProject)
 
 # clone repo only
 ExternalProject_Add(libkvspic-download
-	GIT_REPOSITORY    https://github.com/awslabs/amazon-kinesis-video-streams-pic.git
+	GIT_REPOSITORY    https://github.com/yoi-hibino/amazon-kinesis-video-streams-pic.git
 	GIT_TAG           c8325887faa3a4a296c4367b281c778be69875b6
    	SOURCE_DIR        "${CMAKE_CURRENT_BINARY_DIR}/kvspic-src"
 	BINARY_DIR        "${CMAKE_CURRENT_BINARY_DIR}/kvspic-build"
-	CMAKE_ARGS
-	  -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
+	CMAKE_ARGS        ${CMAKE_ARGS}
 	CONFIGURE_COMMAND ""
 	BUILD_COMMAND     ""
 	INSTALL_COMMAND   ""
