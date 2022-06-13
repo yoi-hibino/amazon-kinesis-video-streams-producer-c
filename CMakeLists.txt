@@ -338,7 +338,8 @@ if(BUILD_COMMON_CURL)
     install(
       FILES ${CMAKE_CURRENT_BINARY_DIR}/libcproducer.pc
       DESTINATION "${CMAKE_INSTALL_LIBDIR}/pkgconfig")
-
+    message("CMAKE_INSTALL_LIBDIR = ${CMAKE_INSTALL_LIBDIR}")
+    message("CMAKE_INSTALL_BINDIR = ${CMAKE_INSTALL_BINDIR}")
     add_executable(kvsVideoOnlyStreamingSample ${KINESIS_VIDEO_PRODUCER_C_SRC}/samples/KvsVideoOnlyStreamingSample.c)
     target_link_libraries(kvsVideoOnlyStreamingSample cproducer)
 
