@@ -52,7 +52,7 @@ endif()
 #    TEST_COMMAND      "")
 
 ExternalProject_Add(project_libcurl
-    GIT_REPOSITORY    https://github.com/yoi-hibino/curl/curl.git
+    GIT_REPOSITORY    https://github.com/yoi-hibino/curl.git
     GIT_TAG           androidtest
     PREFIX            ${CMAKE_CURRENT_BINARY_DIR}/build
     CMAKE_ARGS        ${CMAKE_ARGS}
